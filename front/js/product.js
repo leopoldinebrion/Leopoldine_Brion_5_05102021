@@ -52,4 +52,6 @@ addToCart.addEventListener('click', function(e) {
 
 });
 
+**/
+
 productFetch();
