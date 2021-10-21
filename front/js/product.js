@@ -1,4 +1,3 @@
-
 const str = window.location.href;
 const url = new URL(str);
 const id = url.searchParams.get('id');//je récupère l'id du produit sur lequel j'ai cliqué
@@ -37,21 +36,37 @@ function addProductElement(dataProduct) {
 });
 }
 
-/** 
+productFetch();
+
+//LOCAL STORAGE
 const addToCart = document.getElementById('addToCart');
 addToCart.addEventListener('click', function(e) {
     e.preventDefault(); //empeche de changer de page
 
+    //je crée mes 2 variables pr la couleur et la quantité choisie
     const colorChoose = document.getElementById('colors');
     const quantityChoose = document.getElementById('quantity');
-    const choice = {
-        id: dataProduct_.id,
+    
+    //variable contenant les détails du produit à envoyer ds le localstorage
+    const choiceArray = {
+        id: id,
         color: colorChoose.value,
         quantity: quantityChoose.value
     };
+    
+    let productAlreadyInStorage = JSON.parse(localStorage.getItem("basket")) || [];
+    
+    //si déjà un/des articles ds le storage
+    if(productAlreadyInStorage) {
+        productAlreadyInStorage.push(choiceArray);
+        localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+    }
 
+    // if(productAlreadyInStorage.id === choiceArray.id && productAlreadyInStorage.color === choiceArray.color) {}
+   
+    //si le storage est vide
+    else {
+        productAlreadyInStorage.push(choiceArray);
+        localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+    }
 });
-
-**/
-
-productFetch();
