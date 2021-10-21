@@ -51,19 +51,29 @@ addToCart.addEventListener('click', function(e) {
     const choiceArray = {
         id: id,
         color: colorChoose.value,
-        quantity: quantityChoose.value
+        quantity: parseInt(quantityChoose.value),
     };
     
     let productAlreadyInStorage = JSON.parse(localStorage.getItem("basket")) || [];
     
     //si déjà un/des articles ds le storage
     if(productAlreadyInStorage) {
-        productAlreadyInStorage.push(choiceArray);
-        localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+        const productSameColor = productAlreadyInStorage.find(product =>
+            product.id === choiceArray.id && product.color === choiceArray.color);
+          if(!productSameColor) {
+            productAlreadyInStorage.push(choiceArray);
+            localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+          }
+          else {
+                productSameColor.quantity = productSameColor.quantity + choiceArray.quantity;
+                localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+          }
     }
-
-    // if(productAlreadyInStorage.id === choiceArray.id && productAlreadyInStorage.color === choiceArray.color) {}
    
+    /**              productAlreadyInStorage[productSameColor].quantity = parseInt(productAlreadyInStorage.quantity) + parseInt(productAlreadyInStorage[productSameColor]);
+              console.log(productInLocalStorage)
+              localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+ */
     //si le storage est vide
     else {
         productAlreadyInStorage.push(choiceArray);
