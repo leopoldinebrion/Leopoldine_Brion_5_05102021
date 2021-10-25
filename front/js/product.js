@@ -66,7 +66,7 @@ addToCart.addEventListener('click', function(e) {
     let productAlreadyInStorage = JSON.parse(localStorage.getItem("basket")) || [];
     
     //si déjà un/des articles ds le storage
-    if(productAlreadyInStorage) {
+    /*
         const productSameColor = productAlreadyInStorage.find(product =>
             product.id === choiceArray.id && product.color === choiceArray.color);
           if(!productSameColor) {
@@ -77,11 +77,16 @@ addToCart.addEventListener('click', function(e) {
                 productSameColor.quantity = productSameColor.quantity + choiceArray.quantity;
                 localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
           }
-    }
+*/
 
-    //si le storage est vide
-    else {
-        productAlreadyInStorage.push(choiceArray);
-        localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
-    }
+          const bufferProductIndex = productAlreadyInStorage.findIndex(product =>
+            product.id === choiceArray.id && product.color === choiceArray.color);
+          if(bufferProductIndex === -1) {
+            productAlreadyInStorage.push(choiceArray);
+            localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+          }
+          else {
+                productAlreadyInStorage[bufferProductIndex].quantity = productAlreadyInStorage[bufferProductIndex].quantity + choiceArray.quantity;
+                localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
+          }
 });
