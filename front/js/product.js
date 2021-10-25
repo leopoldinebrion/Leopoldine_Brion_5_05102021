@@ -6,7 +6,6 @@ const productFetch = () => {
     fetch(`http://localhost:3000/api/products/${id}`)
     .then(res => res.json())
     .then((data) => {
-        console.log(data)
         addProductElement(data);
         })
         .catch(err => {
@@ -16,10 +15,11 @@ const productFetch = () => {
 
 function addProductElement(dataProduct) {
     const itemImg = document.querySelector(".item__img");
-    const img = document.createElement("img");
-    img.src = dataProduct.imageUrl;
-    img.alt = dataProduct.altTxt;
-    itemImg.appendChild(img);
+    
+    const imgKanap = document.createElement("img");
+    imgKanap.src = dataProduct.imageUrl;
+    imgKanap.alt = dataProduct.altTxt;
+    itemImg.appendChild(imgKanap);
 
     document.getElementById('title').innerHTML = dataProduct.name;
 
@@ -38,7 +38,7 @@ function addProductElement(dataProduct) {
 
 productFetch();
 
-//LOCAL STORAGE
+//LOCAL STORAGE/EVNT AU CLIC
 const addToCart = document.getElementById('addToCart');
 addToCart.addEventListener('click', function(e) {
     e.preventDefault(); //empeche de changer de page
@@ -46,12 +46,21 @@ addToCart.addEventListener('click', function(e) {
     //je crée mes 2 variables pr la couleur et la quantité choisie
     const colorChoose = document.getElementById('colors');
     const quantityChoose = document.getElementById('quantity');
-    
-    //variable contenant les détails du produit à envoyer ds le localstorage
+    const price = document.getElementById('price').innerHTML;
+    const name = document.getElementById('title').innerHTML;
+    const imgSrc = document.querySelector('.item__img img').src;
+    const imgAlt = document.querySelector('.item__img img').alt;
+
+    //array contenant les détails du produit à envoyer ds le localstorage
     const choiceArray = {
         id: id,
         color: colorChoose.value,
         quantity: parseInt(quantityChoose.value),
+        name: name,
+        price: price,
+        imgSrc: imgSrc,
+        imgAlt: imgAlt,
+
     };
     
     let productAlreadyInStorage = JSON.parse(localStorage.getItem("basket")) || [];
@@ -69,11 +78,7 @@ addToCart.addEventListener('click', function(e) {
                 localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
           }
     }
-   
-    /**              productAlreadyInStorage[productSameColor].quantity = parseInt(productAlreadyInStorage.quantity) + parseInt(productAlreadyInStorage[productSameColor]);
-              console.log(productInLocalStorage)
-              localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
- */
+
     //si le storage est vide
     else {
         productAlreadyInStorage.push(choiceArray);
