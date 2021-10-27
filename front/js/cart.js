@@ -1,14 +1,13 @@
 basket = JSON.parse(localStorage.getItem('basket')) || [];
 
 //fonction qui va parcourir chaque elt du localstorage et injecter ds le DOM ses elts
-
 basket.forEach(element => { 
 
     const parent = document.getElementById('cart__items');
     
-         const totalPrice = element.price * element.quantity;
+    const totalPrice = element.price * element.quantity;
 
-        parent.innerHTML += `<article class="cart__item" data-id="${element.id}">
+    parent.innerHTML += `<article class="cart__item" data-id="${element.id}">
         <div class="cart__item__img">
         <img src="${element.imgSrc}" alt="${element.imgAlt}">
         </div>
@@ -28,22 +27,29 @@ basket.forEach(element => {
         </div>
       </div>
     </div>
-    </article>` 
-        
-    //quantité totale articles
-    const reducer = (previousValue, currentValue) => previousValue.quantity + currentValue.quantity;
-    const getTotalQuantity = basket.reduce(reducer)
-    document.getElementById("totalQuantity").innerHTML = getTotalQuantity;
-
-    //prix total articles
-    const reducerPrice = (previousValue, currentValue) => (previousValue.price * previousValue.quantity) + (currentValue.price * currentValue.quantity);
-    const getTotalPrice = basket.reduce(reducerPrice)
-    document.getElementById('totalPrice').innerHTML = getTotalPrice;
-
-
+    </article>`
+   
 });
 
-function modififyQuantity(basket) {
- const id = document.getElementsByClassName('itemQuantity');
+////////////////quantité totale articles//////////////////////
+function totalQuantity() {
+    basket.forEach(elt => { 
+    const getTotalQuantity = basket.reduce((accu, val) => {
+        return accu + val.quantity;
+        }, 0);
+        document.getElementById("totalQuantity").innerHTML = getTotalQuantity;
+})
+}
 
-};
+totalQuantity();
+
+///////////////prix total articles/////////////////////
+function totalPrice() {
+    basket.forEach(elt => {
+    const getTotalPrice = basket.reduce((accu, val) => {
+        return accu + (val.price * val.quantity)
+    }, 0)   
+    document.getElementById('totalPrice').innerHTML = getTotalPrice; 
+})
+}
+ totalPrice();

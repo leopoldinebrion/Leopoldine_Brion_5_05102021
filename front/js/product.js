@@ -77,7 +77,7 @@ addToCart.addEventListener('click', function(e) {
                 productSameColor.quantity = productSameColor.quantity + choiceArray.quantity;
                 localStorage.setItem("basket", JSON.stringify(productAlreadyInStorage));
           }
-*/
+          */
 
           const bufferProductIndex = productAlreadyInStorage.findIndex(product =>
             product.id === choiceArray.id && product.color === choiceArray.color);
