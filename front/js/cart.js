@@ -3,7 +3,7 @@ basket = JSON.parse(localStorage.getItem('basket')) || [];
 //fonction qui va parcourir chaque elt du localstorage et injecter ds le DOM ses elts
 function displayElt() {
 
-    if(basket < 1) {
+    if(basket == 0) {
         document.querySelector('h1').innerHTML = "Votre panier est vide."
     }
     else {
@@ -13,7 +13,7 @@ function displayElt() {
     
     const totalPrice = element.price * element.quantity;
 
-    parent.innerHTML += `<article class="cart__item" data-id="${element.id}" data-color="${element.color}">
+    parent.innerHTML += `<article class="cart__item" id="${element.id}-${element.color}" data-id="${element.id}" data-color="${element.color}">
         <div class="cart__item__img">
         <img src="${element.imgSrc}" alt="${element.imgAlt}">
         </div>
@@ -26,10 +26,11 @@ function displayElt() {
       <div class="cart__item__content__settings">
         <div class="cart__item__content__settings__quantity">
           <p>Qté : </p>
-          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${element.quantity}">
+          <input type="number" oninput="modifyQuantity(event, '${element.id}', '${element.color}')" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${element.quantity}">
         </div>
         <div class="cart__item__content__settings__delete">
         <p class="deleteItem">Supprimer</p>
+        <p onclick="deleteItem('${element.id}', '${element.color}')">SupprimerBis</p>
         </div>
       </div>
     </div>
@@ -38,75 +39,60 @@ function displayElt() {
    
 }
 }
-
 displayElt();
 
-//////////////supprimer un article////////s////////
-function deleteItem() {
-    document.querySelectorAll('.deleteItem').forEach(element => {
-      element.addEventListener('click', (event) => {
-        event.preventDefault();
-        const newLocalStorage = basket;
-        newLocalStorage.splice(element, 1);
-        localStorage.setItem('basket',JSON.stringify(newLocalStorage));
-        location.reload();
-      });
-    });
-  }
-  deleteItem();
+//////////////supprimer un article////////////////
+const deleteItem = (productId, productColor) => {
 
+  basket = basket.filter(product => {
+    return !(product.id === productId && product.color === productColor)
+  });
+  
+  localStorage.setItem('basket', JSON.stringify(basket));
+  document.getElementById(`${productId}-${productColor}`).remove();
+
+  if(basket == 0) {
+    document.querySelector('h1').innerHTML = "Votre panier est vide."
+}
+
+totalPrice()
+totalQuantity();
+}
 
 /////////////modifier la quantité//////////////////
-function modifyQuantity() {
-    document.querySelectorAll('.itemQuantity').forEach(element => {
-        const id = element.closest('article').dataset.id;
-        const color = element.closest('article').dataset.color;
-        
-        basket.forEach(product => { 
-        element.addEventListener('change', (e) => {
-            e.preventDefault();
-            let newQuantity = e.target.value;
+const modifyQuantity = (event, productId, productColor) =>{
+ const bufferIndex = basket.findIndex(product =>
+  product.id === productId && product.color === productColor);
 
-            if(id === product.id && color === product.color) {
-                product.quantity = newQuantity;
-                localStorage.setItem('basket', JSON.stringify(basket));
-                location.reload;
-            }
-        });
-    });
-});
+  basket[bufferIndex].quantity = event.target.value;
+
+  localStorage.setItem('basket', JSON.stringify(basket));
+
+  totalQuantity()
+  totalPrice();
 }
-modifyQuantity();
-
-
 
 ////////////////quantité totale articles//////////////////////
 function totalQuantity() {
-    basket.forEach(elt => { 
     const getTotalQuantity = basket.reduce((accu, val) => {
-        return accu + val.quantity;
+        return accu + parseInt(val.quantity);
         }, 0);
         document.getElementById("totalQuantity").innerHTML = getTotalQuantity;
-})
 }
 
 totalQuantity();
 
 ///////////////prix total articles/////////////////////
 function totalPrice() {
-    basket.forEach(elt => {
     const getTotalPrice = basket.reduce((accu, val) => {
         return accu + (val.price * val.quantity)
     }, 0)   
     document.getElementById('totalPrice').innerHTML = getTotalPrice; 
-})
 }
  totalPrice();
 
 
 ///////////////FORMULAIRE/////////////////////
-/* créer fonction qui, à l'evnt click, envoi un requete post*/
-
 const form = document.querySelector('.cart__order__form');
 
 //On écoute les modifications des champs du form au changement et on appelle une fonction qui a pr paramètre ce que l'utilisateur est en train de saisir (==> this) 
@@ -167,8 +153,7 @@ validCity = (inputCity) => {
     return true;
   }
   else {
-    inputCity.nextElementSibling.innerHTML = "Veuillez saisir une entrée valide."
-    inputCity.style.color = '#8B0000';
+    inputCity.nextElementSibling.innerHTML = "Veuillez saisir une entrée valide.";
     return false;
   }
 }
@@ -185,12 +170,47 @@ btnForm.addEventListener('click', (e) => {
     validCity(form.city) &&
     validEmail(form.email)
   ) {
-    console.log("niquel");
+    sendForm(basket);
   }
   else {
-    console.log("champ manquant");
+    alert('Champ(s) manquant(s)');
   }
-})
+});
+
+function sendForm() {
+  const products = [];
+
+  const contact = {
+    lastName: form.lastName.value,
+    firstName: form.firstName.value,
+    address: form.address.value,
+    city: form.city.value,
+    email: form.email.value,
+  }
+  
+  basket.forEach(canap => {
+    const productId = canap.id;
+    products.push(productId);
+    console.log(products);
+  })
+
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    headers: {
+      'Accept': 'application/json', 
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({contact:contact, products:products})
+  })
+  .then((res) => res.json())
+  .then((data) => {
+    console.log("data", data);
+    document.location.href = `confirmation.html?id=${data.orderId}`;
+  })
+  .catch(err => {
+    console.log("erreur de type" + err)
+  })
+}
 
 
 
