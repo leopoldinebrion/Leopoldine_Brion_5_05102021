@@ -5,3 +5,5 @@ const orderId = url.searchParams.get("id");
 
 const orderIdSpan = document.getElementById('orderId');
 orderIdSpan.innerHTML = orderId;
+
+localStorage.clear();

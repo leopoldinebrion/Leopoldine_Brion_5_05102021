@@ -1,6 +1,7 @@
 
 let allProducts = undefined;
 
+//récupération des données de l'api
 const productsFetch = () => {
     fetch("http://localhost:3000/api/products")
         .then(res => res.json())
@@ -14,6 +15,7 @@ const productsFetch = () => {
         })
 }
 
+//fonction qui injecte dynamiquement dans le DOM
 const generateHTML = (products) => { 
     if(products) {
         const parent = document.getElementById('items'); //je sélectionne l'élément parent 'items'

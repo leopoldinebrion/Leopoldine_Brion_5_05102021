@@ -11,7 +11,6 @@ function displayElt() {
 
     const parent = document.getElementById('cart__items');
     
-    const totalPrice = element.price * element.quantity;
 
     parent.innerHTML += `<article class="cart__item" id="${element.id}-${element.color}" data-id="${element.id}" data-color="${element.color}">
         <div class="cart__item__img">
@@ -21,7 +20,7 @@ function displayElt() {
         <div class="cart__item__content__titlePrice">
         <h2>${element.name}</h2>
         <p >${element.color}</p>
-        <p>${totalPrice}€</p>
+        <p>${element.price}€</p>
       </div>
       <div class="cart__item__content__settings">
         <div class="cart__item__content__settings__quantity">
@@ -29,8 +28,7 @@ function displayElt() {
           <input type="number" oninput="modifyQuantity(event, '${element.id}', '${element.color}')" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${element.quantity}">
         </div>
         <div class="cart__item__content__settings__delete">
-        <p class="deleteItem">Supprimer</p>
-        <p onclick="deleteItem('${element.id}', '${element.color}')">SupprimerBis</p>
+        <p class="deleteItem" onclick="deleteItem('${element.id}', '${element.color}')">Supprimer</p>
         </div>
       </div>
     </div>
@@ -49,7 +47,7 @@ const deleteItem = (productId, productColor) => {
   });
   
   localStorage.setItem('basket', JSON.stringify(basket));
-  document.getElementById(`${productId}-${productColor}`).remove();
+  document.getElementById(`${productId} ${productColor}`).remove();
 
   if(basket == 0) {
     document.querySelector('h1').innerHTML = "Votre panier est vide."
@@ -60,7 +58,7 @@ totalQuantity();
 }
 
 /////////////modifier la quantité//////////////////
-const modifyQuantity = (event, productId, productColor) =>{
+const modifyQuantity = (event, productId, productColor) => {
  const bufferIndex = basket.findIndex(product =>
   product.id === productId && product.color === productColor);
 
@@ -68,7 +66,8 @@ const modifyQuantity = (event, productId, productColor) =>{
 
   localStorage.setItem('basket', JSON.stringify(basket));
 
-  totalQuantity()
+  
+  totalQuantity();
   totalPrice();
 }
 
@@ -140,7 +139,24 @@ validEmail = (inputEmail) => {
   }
 }
 
-////////VILLE////////
+//////ADRESSE///////////
+form.address.addEventListener('change', function() {
+  validAddress(this);
+})
+
+validAddress = (inputAdress) => {
+  const addressRegex = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
+  let testAdress = addressRegex.test(inputAdress.value);
+  if (testAdress) {
+    inputAdress.nextElementSibling.innerHTML = "";
+    return true;
+  } else {
+    inputAdress.nextElementSibling.innerHTML = "Veuillez saisir une entrée valide";
+    return false;
+  }
+};
+
+////////VILLE///////
 form.city.addEventListener('change', function() {
   validCity(this);
 });
@@ -158,7 +174,6 @@ validCity = (inputCity) => {
   }
 }
 
-
 const btnForm = document.getElementById('order');
 
 btnForm.addEventListener('click', (e) => {
@@ -173,7 +188,7 @@ btnForm.addEventListener('click', (e) => {
     sendForm(basket);
   }
   else {
-    alert('Champ(s) manquant(s)');
+    alert('Champ(s) manquant(s)/invalide(s)');
   }
 });
 
