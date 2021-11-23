@@ -47,7 +47,7 @@ const deleteItem = (productId, productColor) => {
   });
   
   localStorage.setItem('basket', JSON.stringify(basket));
-  document.getElementById(`${productId} ${productColor}`).remove();
+  location.reload();
 
   if(basket == 0) {
     document.querySelector('h1').innerHTML = "Votre panier est vide."
@@ -192,6 +192,8 @@ btnForm.addEventListener('click', (e) => {
   }
 });
 
+//fonction sendForm : fonction qui va permettre de récupérer les données du formulaire etun tableau de produits en constituant un objet contact
+//effectuer une requête POST sur l’API et récupérer l’identifiant de commande dans la réponse de celle-ci
 function sendForm() {
   const products = [];
 
